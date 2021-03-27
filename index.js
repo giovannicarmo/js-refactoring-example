@@ -15,6 +15,29 @@ INVOICES = [
   },
 ];
 
+function amountFor(perf, play) {
+  let thisAmount = 0;
+
+  switch (play.type) {
+    case 'tragedy':
+      thisAmount = 40000;
+      if (perf.audience > 30) {
+        thisAmount += 1000 * (perf.audience - 30);
+      }
+      break;
+    case 'comedy':
+      thisAmount = 30000;
+      if (perf.audience > 20) {
+        thisAmount += 10000 + 500 * (perf.audience - 20);
+      }
+      thisAmount += 300 * perf.audience;
+    default:
+      break;
+  }
+
+  return thisAmount;
+}
+
 function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
@@ -28,32 +51,15 @@ function statement(invoice, plays) {
 
   for (let perf of invoice.performances) {
     const play = plays[perf.playId];
-    let thisAmount = 0;
+    let thisAmount = amountFor(perf, play);
 
-    switch (play.type) {
-      case 'tragedy':
-        thisAmount = 40000;
-        if (perf.audience > 30) {
-          thisAmount += 1000 * (perf.audience - 30);
-        }
-        break;
-      case 'comedy':
-        thisAmount = 30000;
-        if (perf.audience > 20) {
-          thisAmount += 10000 + 500 * (perf.audience - 20);
-        }
-        thisAmount += 300 * perf.audience;
-      default:
-        break;
-    }
-
-    //soma os créditos por volume
+    //add credits per volume
     volumeCredits += Math.max(perf.audience - 30, 0);
 
-    //soma um crédito extra para cada dez espectadores de comédia
+    //sum of extra credit for each ten spectators of commedy
     if (play.type === 'comedy') volumeCredits += Math.floor(perf.audience / 5);
 
-    //exibe a linha para esta requisição
+    //shows the result line for this requisition
     result += `${play.name}: ${format(thisAmount / 100)} (${
       perf.audience
     } seats)\n`;
