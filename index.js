@@ -43,15 +43,23 @@ function amountFor(aPerformance) {
 }
 
 function volumeCreditsFor(aPerformance) {
-  let result = 0
+  let result = 0;
 
   result += Math.max(aPerformance.audience - 30, 0);
 
-  if(playFor(aPerformance).type === "comedy") {
+  if (playFor(aPerformance).type === 'comedy') {
     result += Math.floor(aPerformance.audience / 5);
   }
 
   return result;
+}
+
+function usd(aNumber) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(aNumber);
 }
 
 function statement(invoice) {
@@ -59,25 +67,19 @@ function statement(invoice) {
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
 
-  const format = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format;
-
   for (let perf of invoice.performances) {
     let thisAmount = amountFor(perf);
 
     volumeCredits = volumeCreditsFor(perf);
 
     //shows the result line for this requisition
-    result += `${playFor(perf).name}: ${format(thisAmount / 100)} (${
+    result += `${playFor(perf).name}: ${usd(thisAmount / 100)} (${
       perf.audience
     } seats)\n`;
     totalAmount += thisAmount;
   }
 
-  result += `Amount owed is ${format(totalAmount / 100)}\n`;
+  result += `Amount owed is ${usd(totalAmount / 100)}\n`;
   result += `You earned ${volumeCredits} credits \n`;
 
   return result;
