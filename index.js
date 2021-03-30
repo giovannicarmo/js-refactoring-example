@@ -59,7 +59,7 @@ function usd(aNumber) {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
-  }).format(aNumber);
+  }).format(aNumber/100);
 }
 
 function statement(invoice) {
@@ -73,13 +73,13 @@ function statement(invoice) {
     volumeCredits = volumeCreditsFor(perf);
 
     //shows the result line for this requisition
-    result += `${playFor(perf).name}: ${usd(thisAmount / 100)} (${
+    result += `${playFor(perf).name}: ${usd(thisAmount)} (${
       perf.audience
     } seats)\n`;
     totalAmount += thisAmount;
   }
 
-  result += `Amount owed is ${usd(totalAmount / 100)}\n`;
+  result += `Amount owed is ${usd(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits \n`;
 
   return result;
