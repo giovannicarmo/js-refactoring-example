@@ -21,7 +21,6 @@ function playFor(aPerformance) {
 
 function amountFor(aPerformance) {
   let result = 0;
-
   switch (playFor(aPerformance).type) {
     case 'tragedy':
       result = 40000;
@@ -38,19 +37,15 @@ function amountFor(aPerformance) {
     default:
       break;
   }
-
   return result;
 }
 
 function volumeCreditsFor(aPerformance) {
   let result = 0;
-
   result += Math.max(aPerformance.audience - 30, 0);
-
   if (playFor(aPerformance).type === 'comedy') {
     result += Math.floor(aPerformance.audience / 5);
   }
-
   return result;
 }
 
@@ -62,33 +57,31 @@ function usd(aNumber) {
   }).format(aNumber / 100);
 }
 
-function totalVolumeCredits(invoice) {
-  let volumeCredits = 0;
-
+function totalAmount(invoice) {
+  let result = 0;
   for (let perf of invoice.performances) {
-    volumeCredits = volumeCreditsFor(perf);
+    result = amountFor(perf);
   }
+  return result;
+}
 
-  return volumeCredits;
+function totalVolumeCredits(invoice) {
+  let result = 0;
+  for (let perf of invoice.performances) {
+    result = volumeCreditsFor(perf);
+  }
+  return result;
 }
 
 function statement(invoice) {
-  let totalAmount = 0;
   let result = `Statement for ${invoice.customer}\n`;
-
   for (let perf of invoice.performances) {
-    let thisAmount = amountFor(perf);
-
-    //shows the result line for this requisition
-    result += `${playFor(perf).name}: ${usd(thisAmount)} (${
+    result += `${playFor(perf).name}: ${usd(amountFor(perf))} (${
       perf.audience
     } seats)\n`;
-    totalAmount += thisAmount;
   }
-
-  result += `Amount owed is ${usd(totalAmount)}\n`;
+  result += `Amount owed is ${usd(totalAmount(invoice))}\n`;
   result += `You earned ${totalVolumeCredits(invoice)} credits \n`;
-
   return result;
 }
 
